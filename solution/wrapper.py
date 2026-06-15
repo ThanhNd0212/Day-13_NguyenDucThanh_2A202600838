@@ -16,18 +16,29 @@ the config you pass to call_next, e.g.:
 (Or just edit solution/prompt.txt for a single static prompt used on every request.)
 """
 from __future__ import annotations
+import re
 
-# You may reuse the Day 13 toolkit, e.g.:
-# from telemetry.logger import logger
-# from telemetry.cost import cost_from_usage
-# from telemetry.redact import redact
+
+_PII_PATTERNS = [
+    re.compile(r'\b[\w.+-]+@[\w-]+\.[a-zA-Z]{2,}\b'),      # email
+    re.compile(r'\b(?:\+84|0)\d{9,10}\b'),                   # phone VN
+]
+
+
+def _strip_pii(text: str) -> str:
+    for pat in _PII_PATTERNS:
+        text = pat.sub('', text)
+    return ' '.join(text.split())
 
 
 def mitigate(call_next, question, config, context):
-    # TODO: add observability here (log latency, tokens, cost, errors, PII, tool counts).
-    # TODO: add mitigations (retry on error, cache repeats, route cheap, reset drifting
-    #       sessions, validate arithmetic, sanitize order notes, redact PII...).
-    # TODO: optionally route a better system prompt:
-    #       conf = dict(config); conf["system_prompt"] = "..."; return call_next(question, conf)
-    result = call_next(question, config)        # <-- passthrough stub: replace me
+    clean_q = _strip_pii(question)
+
+    for _ in range(3):
+        result = call_next(clean_q, config)
+        if result.get("answer") is not None:
+            return result
+        if result.get("status") != "ok":
+            return result
+
     return result
