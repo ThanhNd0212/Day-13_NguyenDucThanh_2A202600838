@@ -34,11 +34,15 @@ def _strip_pii(text: str) -> str:
 def mitigate(call_next, question, config, context):
     clean_q = _strip_pii(question)
 
-    for _ in range(3):
+    # Try with current config (self_consistency=2 for correctness)
+    for _ in range(2):
         result = call_next(clean_q, config)
         if result.get("answer") is not None:
             return result
         if result.get("status") != "ok":
             return result
 
-    return result
+    # Fall back to self_consistency=1 to resolve null from disagreement
+    conf1 = dict(config)
+    conf1["self_consistency"] = 1
+    return call_next(clean_q, conf1)

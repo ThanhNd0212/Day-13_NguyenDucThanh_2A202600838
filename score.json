@@ -1,0 +1,21 @@
+{
+  "team": "NguyenDucThanh",
+  "phase": "public",
+  "headline": 89.25,
+  "sub": {
+    "correct": 0.7333,
+    "quality": 0.791,
+    "error": 0.8167,
+    "latency": 0.0,
+    "cost": 0.9188,
+    "drift": 0.6205,
+    "prompt": 0.8525
+  },
+  "diag_f1": 0.778,
+  "n": 120,
+  "n_correct": 82,
+  "judge_mode": "offline",
+  "weights_hash": "e81a8ed58d93",
+  "key_hash": "9a800fa6968d",
+  "sig": "d830072b24ff7bec5c1e1b4a5542f3b5cbd2193316ce7900348afaea2b8fe464"
+}
